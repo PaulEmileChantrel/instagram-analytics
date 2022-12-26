@@ -2,4 +2,7 @@
 *.txt
 img/*
 vgg_tensorflow.py
+__pycache__
+config.py
+*.json
 

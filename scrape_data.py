@@ -60,28 +60,31 @@ class GetInstagramProfile():
         #writer = csv.writer(file)
         try:
             df = pd.read_csv('gresunstudio.csv')
+            downloaded_media = list(df['media'])
         except:
             df = pd.DataFrame()
+            downloaded_media = []
         posts = instaloader.Profile.from_username(self.L.context, username).get_posts()
         len_df = df.shape[0]
-        for i in range(len_df):
-            next(posts)
-        
+
         for post in posts:
+
 
             # print("post date: "+str(post.date))
             # print("post profile: "+post.profile)
             # print("post caption: "+post.caption)
             # print("post location: "+str(post.location))
             try:
-                posturl = "https://www.instagram.com/p/"+post.shortcode
-                print("post url: "+posturl)
-                row = pd.DataFrame({'media':[post.mediaid],'profile':[post.profile],'caption':[post.caption],'date':[post.date],'location':[post.location],'posturl':[posturl],'typename':[post.typename],'mediacount':[post.mediacount],'caption_hashtags':[post.caption_hashtags],'caption_mentions':[post.caption_mentions],'tagged_users':[post.tagged_users],'likes':[post.likes],'comments': [post.comments],  'title': [post.title], 'img_url':  [post.url] })
+                if not post.mediaid in downloaded_media:
+                    posturl = "https://www.instagram.com/p/"+post.shortcode
+                    print("post url: "+posturl)
+                    row = pd.DataFrame({'media':[post.mediaid],'profile':[post.profile],'caption':[post.caption],'date':[post.date],'location':[post.location],'posturl':[posturl],'typename':[post.typename],'mediacount':[post.mediacount],'caption_hashtags':[post.caption_hashtags],'caption_mentions':[post.caption_mentions],'tagged_users':[post.tagged_users],'likes':[post.likes],'comments': [post.comments],  'title': [post.title], 'img_url':  [post.url] })
+                    df = pd.concat([df,row],ignore_index=True)
+                    df.to_csv('gresunstudio.csv',index=False)
             except:
                 pass
-            else:
-                df = pd.concat([df,row],ignore_index=True)
-                df.to_csv('gresunstudio.csv',index=False)
+        
+
             # for comment in post.get_comments():
             #     writer.writerow(["comment",comment.id, comment.owner.username,comment.text,comment.created_at_utc])
             #     print("comment username: "+comment.owner.username)
@@ -93,10 +96,5 @@ class GetInstagramProfile():
 
 if __name__=="__main__":
     cls = GetInstagramProfile()
-    #cls.download_users_profile_picture("best_gadgets_2030")
-    #cls.download_users_posts_with_periods("best_gadgets_2030")
-    #cls.download_hastag_posts("gadgets")
-    #cls.get_users_followers("best_gadgets_2030")
-    #cls.get_users_followings("best_gadgets_2030")
-    #cls.get_post_comments("laydline")
+
     cls.get_post_info_csv("gresunstudio")
