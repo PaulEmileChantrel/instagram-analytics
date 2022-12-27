@@ -26,8 +26,12 @@ def translate_text(target, text):
 if __name__=='__main__':
 
     df = pd.read_csv('gresunstudio.csv')
-    caption = list(df['caption'])
-    caption_hashtags = list(df['caption_hashtags'])
+    df_translated = pd.read_csv('gresunstudio_translated.csv')
+    df_not_translated = pd.concat([df,df_translated],ignore_index=True).drop_duplicates(subset=['posturl'],keep='last',ignore_index=True).fillna('')
+    print(df_not_translated.columns)
+    df_not_translated = df_not_translated[df_not_translated['caption_en']=='']
+    caption = list(df_not_translated['caption'])
+    caption_hashtags = list(df_not_translated['caption_hashtags'])
 
     # api key credential.json
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = '/Users/paul-emile/Documents/PythonProject/insta_profile_scrap/credential.json'
@@ -46,7 +50,24 @@ if __name__=='__main__':
                 sub_key_words.append(k)
         key_words_list.append(sub_key_words)
 
-    df['caption_en'] = cap_translated_list
-    df['caption_hashtags_en'] = cap_has_translated_list
-    df['key_words'] = key_words_list
+    df_not_translated['caption_en'] = cap_translated_list
+    df_not_translated['caption_hashtags_en'] = cap_has_translated_list
+    df_not_translated['key_words'] = key_words_list
+
+    df = pd.concat([df_translated,df_not_translated],ignore_index=True).sort_values(by='media')
     df.to_csv('gresunstudio_translated.csv',index=False)
+
+    key_word_likes = []
+    key_word_recurrence = []
+    for j,k in enumerate(key_words):
+        key_word_likes.append(0)
+        key_word_recurrence.append(0)
+        for i,k_list in enumerate(df['key_words']):
+            if k in k_list:
+                key_word_likes[j]+=df['likes'][i]
+                key_word_recurrence[j]+=1
+
+
+    df_key_word = pd.DataFrame({'key_words':key_words,'likes':key_word_likes,'recurrence':key_word_recurrence})
+    df_key_word['avg_likes'] = df_key_word['likes']/df_key_word['recurrence']
+    df_key_word.to_csv('key_words.csv')

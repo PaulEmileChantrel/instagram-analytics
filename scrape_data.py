@@ -60,7 +60,7 @@ class GetInstagramProfile():
         #writer = csv.writer(file)
         try:
             df = pd.read_csv('gresunstudio.csv')
-            downloaded_media = list(df['media'])
+            downloaded_media = list(df['posturl'])
         except:
             df = pd.DataFrame()
             downloaded_media = []
@@ -75,15 +75,16 @@ class GetInstagramProfile():
             # print("post caption: "+post.caption)
             # print("post location: "+str(post.location))
             try:
-                if not post.mediaid in downloaded_media:
-                    posturl = "https://www.instagram.com/p/"+post.shortcode
+                posturl = "https://www.instagram.com/p/"+post.shortcode
+
+                if not posturl in downloaded_media:
                     print("post url: "+posturl)
                     row = pd.DataFrame({'media':[post.mediaid],'profile':[post.profile],'caption':[post.caption],'date':[post.date],'location':[post.location],'posturl':[posturl],'typename':[post.typename],'mediacount':[post.mediacount],'caption_hashtags':[post.caption_hashtags],'caption_mentions':[post.caption_mentions],'tagged_users':[post.tagged_users],'likes':[post.likes],'comments': [post.comments],  'title': [post.title], 'img_url':  [post.url] })
                     df = pd.concat([df,row],ignore_index=True)
                     df.to_csv('gresunstudio.csv',index=False)
             except:
                 pass
-        
+
 
             # for comment in post.get_comments():
             #     writer.writerow(["comment",comment.id, comment.owner.username,comment.text,comment.created_at_utc])
