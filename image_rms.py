@@ -2,7 +2,12 @@ from PIL import Image
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
+df = pd.read_csv('gresunstudio_translated.csv')
+likes = np.array(list(df['likes']))
+likes_log = np.log(likes)
+norm_likes_log = (likes_log - np.min(likes_log))/(np.max(likes_log)- np.min(likes_log))
 def get_H(file_name):
     reference_image_1 = Image.open(file_name)
     reference_image_arr = np.asarray(reference_image_1)
@@ -38,7 +43,7 @@ img3 = get_H('img/image0.jpg')
 ref1 = 'img/image0.jpg'
 ref2 = 'img/image1.jpg'
 
-filenames = [f'img/image{i}.jpg' for i in range(263)]
+filenames = [f'img/image{i}.jpg' for i in range(262)]
 rms1 = [L2Norm(get_H(ref1), get_H(img)) for img in filenames]
 rms2 = [L2Norm(get_H(ref2), get_H(img)) for img in filenames]
 
@@ -50,15 +55,18 @@ def plot_rms(x_list,y_list,path_list):
 
 
   # Create the figure and subplot
-  fig, ax = plt.subplots()
-
-  for x,y,path in zip(x_list,y_list,path_list):
+  plt.figure(0)
+  fig, ax1 = plt.subplots()
+  plt.figure(1)
+  fig, ax2 = plt.subplots()
+  for x,y,path,color in zip(x_list,y_list,path_list,norm_likes_log):
       print(x,y)
       image = plt.imread(path)
-      ax.imshow(image, extent=[x, x+100000, y, y+100000])
+      ax1.imshow(image, extent=[x, x+100000, y, y+100000])
       # Create a scatter plot using the x and y coordinates
       # Plot the x and y data as points
-      ax.scatter(x, y, marker=",",color='white',alpha=0)
+      ax1.scatter(x, y, marker=",",color='white',alpha=0)
+      ax2.scatter(x, y,color = [color,0,1-color])
 
 plot_rms(rms1,rms2,filenames)
 

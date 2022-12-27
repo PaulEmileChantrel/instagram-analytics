@@ -3,14 +3,14 @@ import requests
 import shutil
 
 df = pd.read_csv('gresunstudio.csv')
-
+df = df.sort_values(by='media',ignore_index=True)
 img_links = df['img_url']
 
 # function to download an image given an img_link and save it to a file_name
 def download_img(img_link,file_name):
 
     res = requests.get(img_link,stream=True)
-    
+
     if res.status_code == 200:
         with open(file_name,'wb') as f:
             shutil.copyfileobj(res.raw, f)
