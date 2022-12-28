@@ -41,7 +41,7 @@ img3 = get_H('img/image0.jpg')
 # print("The distance between Reference_Image_2 and Test Image is : {}".format(dist_test_ref_2))
 
 ref1 = 'img/image0.jpg'
-ref2 = 'img/image1.jpg'
+ref2 = 'img/image234.jpg'#we take images that are far away from each other
 
 filenames = [f'img/image{i}.jpg' for i in range(262)]
 rms1 = [L2Norm(get_H(ref1), get_H(img)) for img in filenames]
