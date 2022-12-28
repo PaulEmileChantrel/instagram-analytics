@@ -67,8 +67,9 @@ with left :
     st.line_chart(likes_df)
 
 # Most liked posts
-most_liked_df = df[['media','likes']]
-most_liked_df = most_liked_df.astype({"media":str,"likes":int})
+df['index'] = df.index
+most_liked_df = df[['index','likes']]
+most_liked_df = most_liked_df.astype({"index":str,"likes":int})
 
 most_liked_df = most_liked_df.sort_values(by="likes",ascending=False)
 most_liked_df = most_liked_df.iloc[:n1]
@@ -79,7 +80,7 @@ most_liked_df = most_liked_df.iloc[:n1]
 with right :
     st.write('Most liked Posts')
     st.altair_chart(alt.Chart(most_liked_df).mark_bar().encode(
-        x=alt.X('media', sort=None),
+        x=alt.X('index', sort=None),
         y='likes',).properties(height=400),use_container_width=True)
 
 left,right = st.columns(2)
@@ -94,7 +95,8 @@ with left :
         x=alt.X('key_words', sort=None),
         y='likes',).properties(height=400),use_container_width=True)
 
-
+# Show most liked posts images
+path = [f'img/image{i}' for i in df['index'][:4]]
 
 # Most liked pondered keyword
 most_liked_kw_df = df_key_word[['key_words','avg_likes']]

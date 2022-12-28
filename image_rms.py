@@ -41,7 +41,7 @@ img3 = get_H('img/image0.jpg')
 # print("The distance between Reference_Image_2 and Test Image is : {}".format(dist_test_ref_2))
 
 ref1 = 'img/image0.jpg'
-ref2 = 'img/image234.jpg'#we take images that are far away from each other
+ref2 = 'img/image313.jpg'#we take images that are far away from each other
 
 filenames = [f'img/image{i}.jpg' for i in range(262)]
 rms1 = [L2Norm(get_H(ref1), get_H(img)) for img in filenames]
@@ -70,11 +70,5 @@ def plot_rms(x_list,y_list,path_list):
 
 plot_rms(rms1,rms2,filenames)
 
-# rms_values = [
-#   (L2Norm(img1, img2), L2Norm(img1, img3),'img/image1.jpg'),
-#   (L2Norm(img2, img1), L2Norm(img2, img3),'img/image2.jpg'),
-#   (L2Norm(img3, img1), L2Norm(img3, img2),'img/image3.jpg'),
-# ]
 
-# plot_rms(rms_values)
 plt.show()
