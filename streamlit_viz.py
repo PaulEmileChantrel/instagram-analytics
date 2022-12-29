@@ -24,9 +24,9 @@ st.sidebar.header("Please filter here :")
 #     default = df['work_type'].unique()
 # )
 n1 = st.sidebar.slider('Number of posts',min_value=4,max_value=28,value=8)  # 👈 this is a widget
-n2 = st.sidebar.slider('Number of key words',min_value=4,max_value=18,value=8)  # 👈 this is a widget
+n2 = st.sidebar.slider('Number of key words',min_value=4,max_value=28,value=8)  # 👈 this is a widget
 n3 = st.sidebar.slider('Number of key words (avg)',min_value=4,max_value=28,value=8)  # 👈 this is a widget
-# x = st.sidebar.slider('Number of key words shown',min_value=4,max_value=28,value=8)  # 👈 this is a widget
+x = st.sidebar.slider('Number of most liked posts shown',min_value=4,max_value=28,value=8)  # 👈 this is a widget
 #
 # df_selection = df.query(
 #     "work_type == @work_types"
@@ -83,6 +83,18 @@ with right :
         x=alt.X('index', sort=None),
         y='likes',).properties(height=400),use_container_width=True)
 
+# Show most liked posts images
+path = [f'img/image{i}.jpg' for i in most_liked_df['index'][:x]]
+from PIL import Image
+cols = st.columns(len(path))
+for i,col in enumerate(cols):
+    with col:
+
+        image = Image.open(path[i])
+        st.image(image, caption=f'#{i+1} most liked image')
+
+
+
 left,right = st.columns(2)
 with left :
     # Most liked keyword
@@ -95,8 +107,6 @@ with left :
         x=alt.X('key_words', sort=None),
         y='likes',).properties(height=400),use_container_width=True)
 
-# Show most liked posts images
-path = [f'img/image{i}' for i in df['index'][:4]]
 
 # Most liked pondered keyword
 most_liked_kw_df = df_key_word[['key_words','avg_likes']]
@@ -109,49 +119,40 @@ with right :
         x=alt.X('key_words', sort=None),
         y='avg_likes',).properties(height=400),use_container_width=True)
 
-#
-# # Pie chart for work
-# left,right = st.columns(2)
-# fig1, ax1 = plt.subplots()
-# fig1.set_facecolor('#00172b')
-# patches,texts,autotext= ax1.pie(work_df['counts'], labels=work_df['work_type'], autopct='%1.1f%%',
-#         shadow=False, startangle=90)
-# ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-# for text in texts:
-#     text.set_color('white')
-# with left:
-#     st.write('Types of work')
-#     st.pyplot(fig1)
-#
-# # Pie chart for schedule type
-# schedule_type_df['schedual'] = schedule_type_df.index
-# fig1, ax1 = plt.subplots()
-# fig1.set_facecolor('#00172b')
-# patches,texts,autotexts= ax1.pie(schedule_type_df['counts'], labels=schedule_type_df['schedual'],autopct='%1.1f%%',
-#         shadow=False, startangle=90)
-# for text in texts:
-#     text.set_color('white')
-#
-#
-# ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-#
-# # Move a label
-# try:
-#     texts[1]._x +=0.05
-#     texts[1]._y -= 0.05
-#     texts[3]._x -=0.05
-#     texts[3]._y += 0.05
-#     autotext[1]._y -=0.1
-#     autotext[3]._y += 0.1
-# except:
-#     pass
-# plt.tight_layout()
-# with right:
-#     st.write('Types of contracts')
-#     st.pyplot(fig1)
+
+## show knn images
+# image = Image.open('knn_images.png')
+# st.image(image, caption=f'Image Space Analysis')
+
+df_knn = pd.read_csv('knn_images.csv')
+
+fig, ax = plt.subplots()
+
+for x,y,path,color in zip(list(df_knn['rawImages']),list(df_knn['features']),list(df_knn['filenames']),list(df_knn['norm_likes'])):
+
+    y = y*10000
+    #print(x,y)
+    image = plt.imread(path)
+    image_height, image_width = image.shape[:2]
+
+    ax.imshow(image,  extent=[x,x+15*color, y,y+15*color])
+    # Create a scatter plot using the x and y coordinates
+    # Plot the x and y data as points
+    ax.scatter(x, y, marker=",",color='white',alpha=0)
 
 
 
+ax.xaxis.label.set_color('white')        #setting up X-axis label color to yellow
+ax.yaxis.label.set_color('white')          #setting up Y-axis label color to blue
+
+ax.tick_params(axis='x', colors='white')    #setting up X-axis tick color to red
+ax.tick_params(axis='y', colors='white')  #setting up Y-axis tick color to black
+
+ax.spines['left'].set_color('white')        # setting up Y-axis tick color to red
+ax.spines['top'].set_color('white')
+st.write('Image Space Analysis')
+fig.set_facecolor('#00172b')
+st.pyplot(fig)
 ### hide elements
 hide_st_style = """
     <style>

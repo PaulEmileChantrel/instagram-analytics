@@ -18,7 +18,7 @@ def plot_rms(x_list,y_list,path_list):
 
   # Create the figure and subplot
   plt.figure(0)
-  fig, ax1 = plt.subplots()
+  fig1, ax1 = plt.subplots()
   plt.figure(1)
   fig, ax2 = plt.subplots()
   for x,y,path,color in zip(x_list,y_list,path_list,norm_likes_log):
@@ -34,6 +34,15 @@ def plot_rms(x_list,y_list,path_list):
       # Plot the x and y data as points
       ax1.scatter(x, y, marker=",",color='white',alpha=0)
       ax2.scatter(x, y,color = [color,0,1-color])
+  ax1.xaxis.label.set_color('white')        #setting up X-axis label color to yellow
+  ax1.yaxis.label.set_color('white')          #setting up Y-axis label color to blue
+
+  ax1.tick_params(axis='x', colors='white')    #setting up X-axis tick color to red
+  ax1.tick_params(axis='y', colors='white')  #setting up Y-axis tick color to black
+
+  ax1.spines['left'].set_color('white')        # setting up Y-axis tick color to red
+  ax1.spines['top'].set_color('white')
+  fig1.savefig('knn_images.png', transparent=True)
 
 def image_to_feature_vector(image, size=(32, 32)):
 	# resize the image to a fixed size, then flatten the image into
@@ -72,7 +81,7 @@ rawImages = []
 features = []
 filenames = []
 
-num_of_images = 341
+num_of_images = 342
 # loop over the input images
 for i in range(num_of_images):
     imagePath = f'img/image{i}.jpg'
@@ -106,9 +115,14 @@ print("[INFO] features matrix: {:.2f}MB".format(
 
 df = pd.read_csv('gresunstudio_translated.csv')
 likes = np.array(list(df['likes']))
+print(likes.shape)
 likes_log = np.sqrt(likes)
 norm_likes_log = (likes_log - np.min(likes_log))/(np.max(likes_log)- np.min(likes_log))
 
-
+rawImages = np.mean(rawImages,axis=1)
+features = np.mean(features,axis=1)
+print(rawImages.shape,norm_likes_log.shape)
+df_img = pd.DataFrame({'rawImages':rawImages,'features':features,'filenames':filenames,'likes':likes,'norm_likes':norm_likes_log})
+df_img.to_csv('knn_images.csv')
 plot_rms(rawImages,features,filenames)
 plt.show()
